@@ -4,24 +4,32 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:test": "NODE_ENV=test next dev",
     "build": "next build",
+    "build:test": "NODE_ENV=test next build",
+    "build:production": "NODE_ENV=production next build",
     "start": "next start",
+    "start:test": "NODE_ENV=test next start",
+    "start:production": "NODE_ENV=production next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/puppeteer": "^5.4.7",
+    "next": "15.2.4",
+    "puppeteer": "^24.10.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.4"
+    "react-hot-toast": "^2.5.2"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

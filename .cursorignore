@@ -1,0 +1,32 @@
+# Cursor ignore file
+# Files and directories to be ignored by Cursor
+
+# Original backup files
+src/app/page-original.tsx
+
+# Node modules and dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Environment files
+.env*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
