@@ -385,16 +385,25 @@ export class ProfessionalPdfService {
         padding: 20pt 0;
       }
 
-      /* Professional Typography */
+      /* Professional Typography with Enhanced Pagination */
       h1 {
         font-size: 20pt;
         font-weight: 700;
         color: #2563eb;
         margin: 24pt 0 16pt 0;
         page-break-after: avoid;
+        page-break-inside: avoid;
+        orphans: 4;
+        widows: 4;
         line-height: 1.2;
         border-bottom: 1pt solid #e5e7eb;
         padding-bottom: 8pt;
+      }
+
+      /* Ensure h1 stays with following content */
+      h1 + * {
+        page-break-before: avoid;
+        margin-top: 0 !important;
       }
 
       h2 {
@@ -403,8 +412,17 @@ export class ProfessionalPdfService {
         color: #1e40af;
         margin: 20pt 0 12pt 0;
         page-break-after: avoid;
+        page-break-inside: avoid;
+        orphans: 4;
+        widows: 4;
         position: relative;
         padding-left: 12pt;
+      }
+
+      /* Ensure h2 stays with following content */
+      h2 + * {
+        page-break-before: avoid;
+        margin-top: 0 !important;
       }
 
       h2::before {
@@ -425,13 +443,50 @@ export class ProfessionalPdfService {
         color: #374151;
         margin: 16pt 0 8pt 0;
         page-break-after: avoid;
+        page-break-inside: avoid;
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Ensure h3 stays with following content */
+      h3 + * {
+        page-break-before: avoid;
+        margin-top: 0 !important;
+      }
+
+      /* Additional heading levels */
+      h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        orphans: 3;
+        widows: 3;
+        margin-top: 14pt;
+        margin-bottom: 6pt;
+      }
+
+      /* Ensure all headings stay with their content */
+      h4 + *, h5 + *, h6 + * {
+        page-break-before: avoid;
+        margin-top: 0 !important;
       }
 
       p {
         margin: 0 0 10pt 0;
         text-align: justify;
-        orphans: 2;
-        widows: 2;
+        orphans: 3;
+        widows: 3;
+        page-break-inside: avoid;
+      }
+
+      /* Enhanced section grouping */
+      .content-section {
+        page-break-inside: avoid;
+        margin-bottom: 20pt;
+      }
+
+      /* Better content flow */
+      .keep-together {
+        page-break-inside: avoid;
       }
 
       /* Professional Tables */
@@ -546,16 +601,34 @@ export class ProfessionalPdfService {
         page-break-inside: avoid;
       }
 
-      /* Professional lists */
+      /* Professional lists with enhanced pagination */
       ul, ol {
         margin: 8pt 0 16pt 0;
         padding-left: 20pt;
+        page-break-before: avoid;
+        page-break-inside: avoid;
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Keep nested lists together */
+      ul ul, ol ol, ul ol, ol ul {
+        margin: 4pt 0;
+        page-break-before: avoid;
       }
 
       li {
         margin-bottom: 6pt;
         page-break-inside: avoid;
         line-height: 1.4;
+        orphans: 2;
+        widows: 2;
+      }
+
+      /* Prevent single list item at bottom of page */
+      li:last-child {
+        page-break-inside: avoid;
+        orphans: 2;
       }
 
       /* Strong emphasis */
@@ -581,6 +654,27 @@ export class ProfessionalPdfService {
         margin: 16pt 0;
         font-style: italic;
         color: #6b7280;
+        page-break-inside: avoid;
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Enhanced pagination for content blocks */
+      div {
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Prevent breaking in the middle of important content */
+      .important-section {
+        page-break-inside: avoid;
+        margin: 16pt 0;
+      }
+
+      /* Force content to stay together */
+      .no-break-section {
+        page-break-inside: avoid;
+        page-break-before: avoid;
       }
 
       /* Footer content styling */

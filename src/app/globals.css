@@ -35,8 +35,36 @@ body {
   }
 }
 
+/* Reverse spinning animation */
+@keyframes spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 .animate-spin-slow {
   animation: spin 2s linear infinite;
+}
+
+.animate-reverse {
+  animation: spin-reverse 1.5s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 .animate-pulse-glow {

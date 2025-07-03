@@ -53,12 +53,16 @@ export const uploadFile = async (
 export const sendToEmail = async (
   email: string,
   pdfBlob: Blob,
-  reportTitle: string = 'Estimation Report'
+  reportTitle: string = 'Estimation Report',
+  fileName?: string
 ): Promise<boolean> => {
   try {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('pdf', pdfBlob, `${reportTitle}.pdf`);
+    if (fileName) {
+      formData.append('fileName', fileName);
+    }
 
     const response = await fetch(`${config.apiBaseUrl}/sendToEmail`, {
       method: 'POST',
@@ -76,6 +80,48 @@ export const sendToEmail = async (
   } catch (error) {
     console.error('Error sending email:', error);
     toast.error('Failed to send report. Please try again.');
+    return false;
+  }
+};
+
+/**
+ * Send a progress update to a specific session via SSE
+ * This uses the new backend session-based messaging system
+ */
+export const sendProgressUpdate = async (
+  message: string,
+  sessionId?: string,
+  data?: any
+): Promise<boolean> => {
+  try {
+    const payload: any = {
+      message,
+      ...(data && { data })
+    };
+
+    // If sessionId is provided, send targeted message
+    // If not provided, it will broadcast to all sessions
+    if (sessionId) {
+      payload.sessionId = sessionId;
+    }
+
+    const response = await fetch(`${config.sseBaseUrl}/progress`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      console.log('📤 Progress update sent successfully:', payload);
+      return true;
+    } else {
+      console.error('❌ Failed to send progress update:', response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error sending progress update:', error);
     return false;
   }
 };

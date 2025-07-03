@@ -73,8 +73,8 @@ const processMarkdownTables = (html: string): string => {
   // Extract headers
   const headers = headerRow.split('|').filter(cell => cell.trim() !== '').map(cell => cell.trim());
   
-  // Create table HTML with page-break-before to ensure tables start on a new page
-  let tableHtml = '<div style="page-break-before: always; overflow-x: auto; margin: 1.5rem 0; border: 1px solid rgb(229, 231, 235); border-radius: 0.5rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); background-color: rgb(255, 255, 255); font-family: \'Inter\', system-ui, -apple-system, sans-serif;"><table style="min-width: 100%; border-collapse: separate; border-spacing: 0;">';
+  // Create responsive table HTML that fits within screen width
+  let tableHtml = '<div style="page-break-before: always; margin: 1.5rem 0; border: 1px solid rgb(229, 231, 235); border-radius: 0.5rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); background-color: rgb(255, 255, 255); font-family: \'Inter\', system-ui, -apple-system, sans-serif;"><table style="width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed;">';
   
   // Add table header
   tableHtml += '<thead>';
@@ -96,7 +96,7 @@ const processMarkdownTables = (html: string): string => {
     tableHtml += `<tr style="${isTotalRow ? 'background-color: rgb(249, 250, 251);' : rowIndex % 2 === 0 ? 'background-color: rgb(255, 255, 255);' : 'background-color: rgb(249, 250, 251);'} border-bottom: 1px solid rgb(229, 231, 235);">`;
     cells.forEach((cell, cellIndex) => {
       const isLastCell = cellIndex === cells.length - 1;
-      tableHtml += `<td style="padding: 0.875rem 1.25rem; white-space: nowrap; font-size: 0.875rem; ${isTotalRow ? 'font-weight: 600; color: rgb(31, 41, 55);' : 'color: rgb(55, 65, 81);'} ${!isLastCell ? 'border-right: 1px solid rgb(229, 231, 235);' : ''}">${cell}</td>`;
+      tableHtml += `<td style="padding: 0.875rem 1.25rem; word-wrap: break-word; overflow-wrap: break-word; font-size: 0.875rem; ${isTotalRow ? 'font-weight: 600; color: rgb(31, 41, 55);' : 'color: rgb(55, 65, 81);'} ${!isLastCell ? 'border-right: 1px solid rgb(229, 231, 235);' : ''}">${cell}</td>`;
     });
     tableHtml += '</tr>';
   });

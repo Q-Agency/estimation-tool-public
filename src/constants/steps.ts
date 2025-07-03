@@ -3,14 +3,14 @@ import { Step } from '@/types';
 export const INITIAL_STEPS: Step[] = [
   {
     id: 'document_preparation',
-    title: 'Document Preparation',
+    title: 'Preparation',
     status: 'pending',
     description: 'Structuring and preparing document for analysis',
     details: 'Your uploaded RFP document is being processed and structured. The system is extracting text content, analyzing document layout, and preparing the data for comprehensive AI analysis.'
   },
   { 
     id: 'platforms', 
-    title: 'Platforms Info', 
+    title: 'Platforms', 
     status: 'pending',
     description: 'Identify target platforms and technologies',
     details: 'Analyzing the document to identify which platforms the solution will need to support (web, mobile, backend, admin portal, etc.) based on the project requirements.'
@@ -31,21 +31,21 @@ export const INITIAL_STEPS: Step[] = [
   },
   { 
     id: 'team_composition', 
-    title: 'Team Composition', 
+    title: 'Team', 
     status: 'pending',
     description: 'Determine optimal team structure',
     details: 'Analyzing project requirements and technology stack to recommend the optimal team composition, roles, and resource allocation.'
   },
   { 
     id: 'effort_estimation', 
-    title: 'Effort Estimation', 
+    title: 'Estimate', 
     status: 'pending',
     description: 'Estimate effort required for each component',
     details: 'Based on the analyzed requirements, technology stack, and team composition, calculating the effort required for project implementation in sprint cycles.'
   },
   { 
     id: 'development_plan', 
-    title: 'Development Plan', 
+    title: 'Roadmap', 
     status: 'pending',
     description: 'Create detailed development roadmap',
     details: 'A comprehensive development plan is generated, outlining phases, milestones, and timelines for the project implementation.'
