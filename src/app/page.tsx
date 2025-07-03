@@ -46,27 +46,22 @@ export default function Home() {
   });
 
   // Export state
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isExportLoading, setIsExportLoading] = useState(false);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   
   // Filtering and sorting state
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scopeItemsRef = useRef<any[]>([]);
   const currentSessionIdRef = useRef<string | null>(null);
 
   // Custom hooks
   const {
     steps,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     activeStepIndex,
     selectedStep,
     isDetailsOpen,
@@ -74,7 +69,6 @@ export default function Home() {
     resetSteps,
     updateStepFromSSEData,
     startFilePreparation,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     startProcessing,
     handleStepClick,
     toggleDetails,
