@@ -31,6 +31,15 @@ export const useEstimationSteps = () => {
       sessionId: data.sessionId
     });
     
+    // Handle general_error step specifically
+    if (data.step === 'general_error') {
+      console.error('🚨 General error received from SSE:', data);
+      // Stop processing immediately
+      setIsProcessing(false);
+      // The toast and connection cleanup will be handled by the parent component
+      return;
+    }
+    
     // Helper function to get platform icon based on enum
     const getPlatformIcon = (enumValue: string): string => {
       switch (enumValue) {
@@ -51,7 +60,7 @@ export const useEstimationSteps = () => {
       }
     };
 
-    // First check if this is an error event
+    // First check if this is an error event (other than general_error)
     if (data.step && data.step.includes('error')) {
       console.error('SSE Error Event:', data.error);
       
@@ -97,9 +106,9 @@ export const useEstimationSteps = () => {
           if (currentStepIndex + 1 < newSteps.length) {
             newSteps[currentStepIndex + 1].status = 'in_progress';
             
-            // Select the new active step
-            setSelectedStep(newSteps[currentStepIndex + 1]);
-            setIsDetailsOpen(true);
+            // Don't automatically switch to the next step - let user stay on current step
+            // setSelectedStep(newSteps[currentStepIndex + 1]);
+            // setIsDetailsOpen(true);
           } else {
             // All steps are complete
             setIsProcessing(false);
@@ -130,9 +139,9 @@ export const useEstimationSteps = () => {
           if (currentStepIndex + 1 < newSteps.length) {
             newSteps[currentStepIndex + 1].status = 'in_progress';
             
-            // Select the new active step
-            setSelectedStep(newSteps[currentStepIndex + 1]);
-            setIsDetailsOpen(true);
+            // Don't automatically switch to the next step - let user stay on current step
+            // setSelectedStep(newSteps[currentStepIndex + 1]);
+            // setIsDetailsOpen(true);
           } else {
             // All steps are complete
             setIsProcessing(false);
@@ -187,9 +196,9 @@ export const useEstimationSteps = () => {
               if (currentStepIndex + 1 < newSteps.length) {
                 newSteps[currentStepIndex + 1].status = 'in_progress';
                 
-                // Select the new active step
-                setSelectedStep(newSteps[currentStepIndex + 1]);
-                setIsDetailsOpen(true);
+                // Don't automatically switch to the next step - let user stay on current step
+                // setSelectedStep(newSteps[currentStepIndex + 1]);
+                // setIsDetailsOpen(true);
               } else {
                 // All steps are complete
                 setIsProcessing(false);
@@ -261,9 +270,9 @@ export const useEstimationSteps = () => {
               if (currentStepIndex + 1 < newSteps.length) {
                 newSteps[currentStepIndex + 1].status = 'in_progress';
                 
-                // Select the new active step
-                setSelectedStep(newSteps[currentStepIndex + 1]);
-                setIsDetailsOpen(true);
+                // Don't automatically switch to the next step - let user stay on current step
+                // setSelectedStep(newSteps[currentStepIndex + 1]);
+                // setIsDetailsOpen(true);
               } else {
                 // All steps are complete
                 setIsProcessing(false);
@@ -352,9 +361,9 @@ export const useEstimationSteps = () => {
               if (currentStepIndex + 1 < newSteps.length) {
                 newSteps[currentStepIndex + 1].status = 'in_progress';
                 
-                // Select the new active step
-                setSelectedStep(newSteps[currentStepIndex + 1]);
-                setIsDetailsOpen(true);
+                // Don't automatically switch to the next step - let user stay on current step
+                // setSelectedStep(newSteps[currentStepIndex + 1]);
+                // setIsDetailsOpen(true);
               } else {
                 // All steps are complete
                 setIsProcessing(false);
@@ -427,9 +436,9 @@ export const useEstimationSteps = () => {
               if (currentStepIndex + 1 < newSteps.length) {
                 newSteps[currentStepIndex + 1].status = 'in_progress';
                 
-                // Select the new active step
-                setSelectedStep(newSteps[currentStepIndex + 1]);
-                setIsDetailsOpen(true);
+                // Don't automatically switch to the next step - let user stay on current step
+                // setSelectedStep(newSteps[currentStepIndex + 1]);
+                // setIsDetailsOpen(true);
               } else {
                 // All steps are complete
                 setIsProcessing(false);
@@ -506,9 +515,9 @@ export const useEstimationSteps = () => {
               if (currentStepIndex + 1 < newSteps.length) {
                 newSteps[currentStepIndex + 1].status = 'in_progress';
                 
-                // Select the new active step
-                setSelectedStep(newSteps[currentStepIndex + 1]);
-                setIsDetailsOpen(true);
+                // Don't automatically switch to the next step - let user stay on current step
+                // setSelectedStep(newSteps[currentStepIndex + 1]);
+                // setIsDetailsOpen(true);
               } else {
                 // All steps are complete
                 setIsProcessing(false);
@@ -594,9 +603,9 @@ export const useEstimationSteps = () => {
           if (currentStepIndex + 1 < newSteps.length) {
             newSteps[currentStepIndex + 1].status = 'in_progress';
             
-            // Select the new active step
-            setSelectedStep(newSteps[currentStepIndex + 1]);
-            setIsDetailsOpen(true);
+            // Don't automatically switch to the next step - let user stay on current step
+            // setSelectedStep(newSteps[currentStepIndex + 1]);
+            // setIsDetailsOpen(true);
           } else {
             // All steps are complete
             setIsProcessing(false);
@@ -682,7 +691,7 @@ export const useEstimationSteps = () => {
       
       if (docPrepIndex !== -1) {
         newSteps[docPrepIndex].status = 'in_progress';
-        newSteps[docPrepIndex].details = 'Upload successful! ✅\n\nProcessing and structuring your document for analysis. The system is:\n- Validating PDF format\n- Extracting text content\n- Analyzing document structure\n- Preparing data for AI analysis\n\nPlease wait while we prepare your RFP document...';
+        newSteps[docPrepIndex].details = 'Upload successful! Processing and structuring your document for analysis.';
         setActiveStepIndex(docPrepIndex);
         
         // Select the document preparation step
@@ -695,23 +704,6 @@ export const useEstimationSteps = () => {
     
     // Set processing state to true
     setIsProcessing(true);
-    
-    // Set a timeout to detect if processing stalls
-    setTimeout(() => {
-      setSteps((prevSteps) => {
-        const currentDocPrepStep = prevSteps.find(step => step.id === 'document_preparation');
-        if (currentDocPrepStep?.status === 'in_progress') {
-          // Document preparation is still in progress after 30 seconds - something might be wrong
-          const newSteps = [...prevSteps];
-          const docPrepIndex = newSteps.findIndex(step => step.id === 'document_preparation');
-          if (docPrepIndex !== -1) {
-            newSteps[docPrepIndex].details += '\n\n⚠️ Processing is taking longer than expected. The analysis is still running in the background...';
-          }
-          return newSteps;
-        }
-        return prevSteps;
-      });
-    }, 30000); // 30 seconds timeout warning
   }, []);
 
   const startProcessing = useCallback(() => {
