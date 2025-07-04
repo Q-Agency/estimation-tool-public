@@ -9,8 +9,10 @@ import { useSSE } from '@/hooks/useSSE';
 import { useEstimationSteps } from '@/hooks/useEstimationSteps';
 import { EmailFormData, UploadResponse } from '@/types';
 import { sendToEmail } from '@/services/api';
+import { useLocalization } from '@/lib/localization';
 
 export default function Home() {
+  const { t: texts } = useLocalization();
   // File upload state
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -98,10 +100,10 @@ export default function Home() {
           <div className="flex-1 min-w-0">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
-                {errorData.title || 'Something went wrong'}
+                {errorData.title || texts.errors.somethingWentWrong}
               </h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                {errorData.output || 'We encountered an issue processing your file. Please try uploading again and if the problem persists, contact support.'}
+                {errorData.output || texts.errors.defaultErrorMessage}
               </p>
             </div>
             
@@ -128,7 +130,7 @@ export default function Home() {
                 }}
                 className="group inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-red-50"
               >
-                <span>Got it</span>
+                <span>{texts.general.gotIt}</span>
                 <svg className="ml-1.5 w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
@@ -398,7 +400,7 @@ export default function Home() {
             }
           } catch (error) {
             console.error('Error parsing upload response:', error);
-            toast.error('Upload completed but response was invalid. Please try again.');
+            toast.error(texts.errors.uploadInvalid);
             
             // Reset upload state to show upload section again
             setUploadedFileName(null);
@@ -423,7 +425,7 @@ export default function Home() {
       });
 
       xhr.addEventListener('error', () => {
-        toast.error('Upload failed. Please try again.');
+        toast.error(texts.errors.uploadFailed);
         setIsUploading(false);
         
         // Reset upload state to show upload section again
@@ -551,10 +553,10 @@ export default function Home() {
 
   const handleUploadDifferentRFP = () => {
     showCustomConfirmation({
-      title: 'Upload Different RFP',
-      message: 'Are you sure you want to upload a different RFP? This will start a completely new analysis and you will lose the current progress.',
-      confirmText: 'Yes',
-      cancelText: 'Cancel',
+      title: texts.confirmations.uploadDifferentTitle,
+      message: texts.confirmations.uploadDifferentMessage,
+      confirmText: texts.general.yes,
+      cancelText: texts.general.cancel,
       onConfirm: resetUpload,
       isDangerous: true
     });
@@ -609,7 +611,7 @@ export default function Home() {
         
       } catch (error) {
         console.error('Error restarting analysis:', error);
-        toast.error('Failed to restart analysis. Please try again.');
+        toast.error(texts.errors.failedToRestart);
         
         setAnalysisStarted(false);
         setIsProcessing(false);
@@ -661,7 +663,7 @@ export default function Home() {
       
     } catch (error) {
       console.error('Error starting analysis:', error);
-      toast.error('Failed to start analysis. Please try again.');
+      toast.error(texts.errors.failedToStart);
       
       // Reset analysis state on error
       setAnalysisStarted(false);
@@ -678,7 +680,7 @@ export default function Home() {
     e.preventDefault();
     
     if (!emailFormData.email) {
-      toast.error('Please enter an email address');
+      toast.error(texts.errors.enterEmail);
       return;
     }
 
@@ -730,17 +732,17 @@ export default function Home() {
 
       if (success) {
         toast.dismiss();
-        toast.success('Professional report sent successfully!');
+        toast.success(texts.success.reportSent);
         setEmailFormData({ email: '', isSubmitting: false });
         setShowEmailForm(false);
       } else {
         toast.dismiss();
-        toast.error('Failed to send report. Please try again.');
+        toast.error(texts.errors.failedToSend);
       }
     } catch (error) {
       console.error('Error sending email:', error);
       toast.dismiss();
-      toast.error('Failed to send report. Please try again.');
+      toast.error(texts.errors.failedToSend);
     } finally {
       setEmailFormData({ ...emailFormData, isSubmitting: false });
     }
@@ -755,7 +757,7 @@ export default function Home() {
     e.preventDefault();
     
     if (!modalEmailFormData.email) {
-      toast.error('Please enter an email address');
+      toast.error(texts.errors.enterEmail);
       return;
     }
 
@@ -807,17 +809,17 @@ export default function Home() {
 
       if (success) {
         toast.dismiss();
-        toast.success('Professional report sent successfully!');
+        toast.success(texts.success.reportSent);
         setModalEmailFormData({ email: '', isSubmitting: false });
         setShowCompletionModal(false);
       } else {
         toast.dismiss();
-        toast.error('Failed to send report. Please try again.');
+        toast.error(texts.errors.failedToSend);
       }
     } catch (error) {
       console.error('Error sending email:', error);
       toast.dismiss();
-      toast.error('Failed to send report. Please try again.');
+      toast.error(texts.errors.failedToSend);
     } finally {
       setModalEmailFormData({ ...modalEmailFormData, isSubmitting: false });
     }
@@ -872,12 +874,12 @@ export default function Home() {
       document.body.removeChild(a);
       
       toast.dismiss();
-      toast.success('Professional PDF exported successfully!');
+      toast.success(texts.success.pdfExported);
       setShowCompletionModal(false);
     } catch (error) {
       console.error('Error exporting PDF:', error);
       toast.dismiss();
-      toast.error('Failed to export PDF. Please try again.');
+              toast.error(texts.errors.failedToExport);
     }
   };
 
@@ -932,11 +934,11 @@ export default function Home() {
       document.body.removeChild(a);
       
       toast.dismiss();
-      toast.success('Professional PDF exported successfully!');
+      toast.success(texts.success.pdfExported);
     } catch (error) {
       console.error('Error exporting PDF:', error);
       toast.dismiss();
-      toast.error('Failed to export PDF. Please try again.');
+      toast.error(texts.errors.failedToExport);
     } finally {
       setIsExportLoading(false);
     }
@@ -1071,10 +1073,10 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Analysis Complete! 🎉
+                  {texts.analysis.analysisCompleteTitle}
                 </h3>
                 <p className="text-gray-600">
-                  Your comprehensive project estimation is ready for export
+                  {texts.analysis.comprehensiveReady}
                 </p>
               </div>
 
@@ -1082,14 +1084,14 @@ export default function Home() {
               <form onSubmit={handleModalEmailSubmit} className="space-y-4 mb-6">
                 <div>
                   <label htmlFor="modal-email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address <span className="text-red-500">*</span>
+                    {texts.email.emailAddress} <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="modal-email"
                     type="email"
                     value={modalEmailFormData.email}
                     onChange={handleModalEmailChange}
-                    placeholder="Enter your email address"
+                    placeholder={texts.email.enterEmailAddress}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-colors ${
                       modalEmailFormData.email && !isValidEmail(modalEmailFormData.email)
                         ? 'border-red-300 focus:ring-red-500'
@@ -1103,7 +1105,7 @@ export default function Home() {
                   </p>
                   {modalEmailFormData.email && !isValidEmail(modalEmailFormData.email) && (
                     <p className="mt-1 text-xs text-red-500">
-                      • Please enter a valid email address
+                      {texts.email.enterValidEmail}
                     </p>
                   )}
                 </div>
@@ -1122,14 +1124,14 @@ export default function Home() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Sending...
+                      {texts.email.sending}
                     </>
                   ) : (
                     <>
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
-                      Send via Email
+                      {texts.email.sendViaEmail}
                     </>
                   )}
                 </button>
@@ -1142,7 +1144,7 @@ export default function Home() {
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Download PDF
+                  {texts.email.downloadPdf}
                 </button>
               </div>
 
@@ -1153,7 +1155,7 @@ export default function Home() {
                     onClick={() => setShowDisclaimerModal(true)}
                     className="text-xs text-blue-600 hover:text-blue-800 underline decoration-1 underline-offset-2 hover:decoration-2 transition-all"
                   >
-                    Privacy & Email Usage Disclaimer
+                    {texts.email.privacyDisclaimer}
                   </button>
                 </div>
               </div>
@@ -1175,7 +1177,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Privacy & Email Usage
+                  {texts.modals.privacyTitle}
                 </h3>
               </div>
 
@@ -1184,7 +1186,7 @@ export default function Home() {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">📧 Email Delivery & Communication</h4>
                   <p className="mb-3">
-                    Your email address is required to deliver your personalized project estimation report. By providing your email, you consent to receive:
+                    {texts.email.emailConsentText}
                   </p>
                 </div>
                 
@@ -1196,8 +1198,8 @@ export default function Home() {
                       </svg>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Immediate Report Delivery</p>
-                      <p className="text-xs text-gray-600">Your professional PDF analysis report sent directly to your inbox</p>
+                                      <p className="font-medium text-gray-900">{texts.analysisResults.immediateReportDelivery}</p>
+                <p className="text-xs text-gray-600">{texts.analysisResults.immediateReportDescription}</p>
                     </div>
                   </div>
                   
@@ -1209,7 +1211,7 @@ export default function Home() {
                       </svg>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Occasional Value-Added Communications</p>
+                      <p className="font-medium text-gray-900">{texts.analysisResults.occasionalCommunications}</p>
                       <p className="text-xs text-gray-600">Insights on estimation best practices, tool updates, and industry trends (max 1-2 per month)</p>
                     </div>
                   </div>
@@ -1221,7 +1223,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                     </svg>
                     <div>
-                      <h4 className="font-semibold text-green-900 mb-1">Privacy Guarantee</h4>
+                      <h4 className="font-semibold text-green-900 mb-1">{texts.analysisResults.privacyGuarantee}</h4>
                       <ul className="text-xs text-green-800 space-y-1">
                         <li>✓ Your email is never shared with third parties</li>
                         <li>✓ Easy one-click unsubscribe from all communications</li>
@@ -1245,7 +1247,7 @@ export default function Home() {
                   onClick={() => setShowDisclaimerModal(false)}
                   className="w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  Understood
+                  {texts.email.understood}
                 </button>
               </div>
             </div>
@@ -1267,7 +1269,7 @@ export default function Home() {
                 >
                 <img 
                   src="/Q.png" 
-                  alt="Q Logo" 
+                                      alt={texts.email.qLogo} 
                   className="h-8 w-auto mr-3"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
@@ -1276,8 +1278,8 @@ export default function Home() {
                 </a>
                 <div>
                   <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-gray-900">AI Estimation Tool</h1>
-                    <span className="px-2 py-1 text-xs font-bold bg-green-100 text-green-800 rounded-full border border-green-200">FREE</span>
+                            <h1 className="text-xl font-bold text-gray-900">{texts.analysisResults.aiEstimationTool}</h1>
+            <span className="px-2 py-1 text-xs font-bold bg-green-100 text-green-800 rounded-full border border-green-200">{texts.analysisResults.free}</span>
                   </div>
                   {uploadedFileName && (
                     <p className="text-sm text-gray-500 mt-1 truncate max-w-xs">
@@ -1304,7 +1306,7 @@ export default function Home() {
                     onClick={handleUploadDifferentRFP}
                       className="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                   >
-                    Upload Different RFP
+                    {texts.fileUpload.uploadDifferent}
                   </button>
                   </div>
                 </div>
@@ -1317,7 +1319,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-4 hover:decoration-blue-800 transition-colors"
               >
-                <span className="mr-1">Explore Full Version</span>
+                <span className="mr-1">{texts.pageContent.exploreFullVersion}</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
@@ -1341,11 +1343,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-center space-x-3 mb-2">
                   <h2 className="text-2xl font-bold text-gray-900">
-                    AI-Powered Project Estimation
+                    {texts.pageContent.aiPoweredTitle}
               </h2>
                 </div>
                 <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                  Upload your RFP document and receive comprehensive AI analysis with detailed project estimation, team recommendations, and development roadmaps.
+                  {texts.pageContent.aiPoweredDescription}
               </p>
             </div>
 
@@ -1358,7 +1360,7 @@ export default function Home() {
                     </svg>
                   </div>
                   <h3 className="font-semibold text-gray-900 text-sm">8-Step Analysis</h3>
-                  <p className="text-xs text-gray-600 mt-1">Comprehensive project breakdown</p>
+                  <p className="text-xs text-gray-600 mt-1">{texts.analysisResults.comprehensiveBreakdown}</p>
                 </div>
                 
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200 shadow-sm">
@@ -1367,8 +1369,8 @@ export default function Home() {
                       <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                     </svg>
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm">Team Planning</h3>
-                  <p className="text-xs text-gray-600 mt-1">Optimal resource allocation</p>
+                                      <h3 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.teamPlanning}</h3>
+                    <p className="text-xs text-gray-600 mt-1">{texts.analysisResults.optimalAllocation}</p>
                 </div>
                 
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200 shadow-sm">
@@ -1377,7 +1379,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm">Timeline Estimates</h3>
+                                      <h3 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.timelineEstimates}</h3>
                   <p className="text-xs text-gray-600 mt-1">Sprint & milestone planning</p>
                 </div>
               </div>
@@ -1414,7 +1416,7 @@ export default function Home() {
                 {/* Upload Content */}
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Upload Your RFP Document
+                    {texts.fileUpload.uploadRfpTitle}
                   </h3>
                   <p className="text-gray-600 mb-4 max-w-md mx-auto">
                     Drag and drop your PDF file here, or click to browse your files
@@ -1429,7 +1431,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         </div>
-                        <span className="text-sm font-medium text-gray-700">PDF Only</span>
+                        <span className="text-sm font-medium text-gray-700">{texts.analysisResults.pdfOnly}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
@@ -1457,7 +1459,7 @@ export default function Home() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    Choose Your RFP File
+                    {texts.fileUpload.chooseFile}
                   </button>
                   
                   {/* Legal Disclaimer Button */}
@@ -1469,7 +1471,7 @@ export default function Home() {
                       <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                       </svg>
-                      Legal Disclaimer
+                      {texts.fileUpload.legalDisclaimer}
                   </button>
                   </div>
                 </div>
@@ -1486,10 +1488,10 @@ export default function Home() {
                 {/* Success Header */}
                 <div className="mb-4">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Ready to Analyze Your RFP
+                    {texts.fileUpload.readyToAnalyze}
                 </h2>
                   <p className="text-base text-gray-600">
-                    Click "Start AI Analysis" below to begin your comprehensive project estimation
+                                              {texts.fileUpload.clickStartAnalysis}
                   </p>
                 </div>
                 
@@ -1531,9 +1533,9 @@ export default function Home() {
                         </svg>
                       </div>
                       <div className="text-left">
-                        <h4 className="font-semibold text-blue-900 mb-2">What Happens Next</h4>
+                        <h4 className="font-semibold text-blue-900 mb-2">{texts.fileUpload.whatHappensNext}</h4>
                         <p className="text-blue-800 text-sm leading-relaxed">
-                          Our advanced AI will analyze your document through <strong>8 comprehensive steps</strong> including platform identification, requirements extraction, technology stack recommendations, team composition planning, effort estimation, and detailed development roadmap creation.
+                          {texts.fileUpload.analysisDescription}
                         </p>
                       </div>
                   </div>
@@ -1547,7 +1549,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zM3 15a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1zm6-11a1 1 0 011-1h1a1 1 0 011 1v2H9V4zm0 4h3v2H9V8zm0 4h3v2H9v-2z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Preparation</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.documentPreparation.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1560,7 +1562,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Platforms</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.platforms.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1573,7 +1575,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Requirements</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.requirements.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1586,7 +1588,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Techstack</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.techstack.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1599,7 +1601,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Team</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.teamComposition.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1613,7 +1615,7 @@ export default function Home() {
                           <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Estimate</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.effortEstimation.title}</div>
                     </div>
                     
                     <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1626,7 +1628,7 @@ export default function Home() {
                           <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <div className="text-xs font-medium text-gray-700">Roadmap</div>
+                      <div className="text-xs font-medium text-gray-700">{texts.steps.developmentPlan.title}</div>
                     </div>
                   </div>
                 </div>
@@ -1640,7 +1642,7 @@ export default function Home() {
                     <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    Start AI Analysis
+                    {texts.fileUpload.startAnalysis}
                   </button>
                   
                   <button
@@ -1650,7 +1652,7 @@ export default function Home() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
-                    Upload Different File
+                    {texts.fileUpload.uploadDifferentFile}
                   </button>
                 </div>
               </div>
@@ -1669,10 +1671,10 @@ export default function Home() {
                   <div className="w-12 h-12 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"></div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      Uploading Your Document
+                      {texts.fileUpload.uploadingDocument}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Please wait while we securely process your RFP file...
+                  {texts.fileUpload.processingMessage}
                     </p>
                   </div>
               
@@ -1687,7 +1689,7 @@ export default function Home() {
                 </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{uploadedFileName}</p>
-                      <p className="text-sm text-gray-600">Processing PDF document...</p>
+                      <p className="text-sm text-gray-600">{texts.fileUpload.processingPdf}</p>
               </div>
               </div>
                               </div>
@@ -1713,7 +1715,7 @@ export default function Home() {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H4a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Export Report
+                    {texts.fileUpload.exportReport}
                   </button>
                 )}
               </div>
@@ -1758,9 +1760,9 @@ export default function Home() {
                     </div>
                     
                 <div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">🎉 Analysis Complete!</h3>
-                      <p className="text-lg text-green-700 font-medium">All {steps.length} steps completed successfully</p>
-                      <p className="text-sm text-gray-600 mt-1">Your comprehensive project estimation is ready</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{texts.analysis.analysisCompleteTitle}</h3>
+                      <p className="text-lg text-green-700 font-medium">{texts.analysis.allStepsCompleted.replace('{steps}', steps.length.toString())}</p>
+                      <p className="text-sm text-gray-600 mt-1">{texts.analysis.comprehensiveProjectReady}</p>
                 </div>
                   </div>
                 ) : (
@@ -1799,12 +1801,12 @@ export default function Home() {
                   </div>
                     
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">Analysis Progress</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{texts.analysis.analysisProgress}</h3>
                       <p className="text-sm text-gray-600">
-                        {isProcessing ? 'AI is analyzing your RFP document...' : 'Analysis in progress...'}
+                        {isProcessing ? texts.analysis.aiAnalyzing : texts.analysis.analysisInProgress}
                       </p>
                       <div className="text-lg font-bold text-blue-600 mt-2">
-                        {steps.filter(step => step.status === 'done').length}/{steps.length} Complete
+                        {steps.filter(step => step.status === 'done').length}/{steps.length} {texts.analysis.complete}
                 </div>
                     </div>
                   </div>
@@ -2046,21 +2048,21 @@ export default function Home() {
                           {selectedStep.status === 'done' ? (() => {
                             switch (selectedStep.id) {
                               case 'document_preparation':
-                                return 'Document Preparation Complete';
+                                return texts.stepStatus.completed.documentPreparationComplete;
                               case 'platforms':
-                                return 'Platform Analysis Complete';
+                                return texts.stepStatus.completed.platformAnalysisComplete;
                               case 'requirements':
-                                return 'Requirements Analysis Complete';
+                                return texts.stepStatus.completed.requirementsAnalysisComplete;
                               case 'techstack':
-                                return 'Technology Stack Analysis Complete';
+                                return texts.stepStatus.completed.technologyStackAnalysisComplete;
                               case 'team_composition':
-                                return 'Team Composition Analysis Complete';
+                                return texts.stepStatus.completed.teamCompositionAnalysisComplete;
                               case 'effort_estimation':
-                                return 'Effort Estimation Complete';
+                                return texts.stepStatus.completed.effortEstimationComplete;
                               case 'development_plan':
-                                return 'Development Plan Complete';
+                                return texts.stepStatus.completed.developmentPlanComplete;
                               case 'final_report':
-                                return 'Final Report Complete';
+                                return texts.stepStatus.completed.finalReportComplete;
                               default:
                                 return selectedStep.title;
                             }
@@ -2138,7 +2140,7 @@ export default function Home() {
                           
                           {/* Step Preview */}
                           <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                            <h4 className="font-semibold text-blue-900 mb-3">What This Step Will Do</h4>
+                            <h4 className="font-semibold text-blue-900 mb-3">{texts.analysisResults.whatThisStepWillDo}</h4>
                             <p className="text-blue-800 text-sm leading-relaxed">
                               {selectedStep.id === 'document_preparation' && 'Parse and structure your RFP document, extracting key information and preparing it for AI analysis.'}
                               {selectedStep.id === 'platforms' && 'Analyze your requirements to identify target platforms such as web, mobile, desktop, or specialized applications.'}
@@ -2194,7 +2196,7 @@ export default function Home() {
                                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                               </div>
                               <div>
-                                <h4 className="font-semibold text-blue-900 mb-2">Processing Status</h4>
+                                <h4 className="font-semibold text-blue-900 mb-2">{texts.analysisResults.processingStatus}</h4>
                                 <p className="text-blue-800 text-sm leading-relaxed">
                                   {selectedStep.details || 'AI is analyzing your document. Results will appear here when processing is complete.'}
                                 </p>
@@ -2230,7 +2232,7 @@ export default function Home() {
                                </svg>
                                 </div>
                                 <div>
-                                  <h4 className="font-semibold text-red-900 mb-2">Error Details</h4>
+                                  <h4 className="font-semibold text-red-900 mb-2">{texts.analysisResults.errorDetails}</h4>
                                   <p className="text-red-800 text-sm leading-relaxed">
                                     {selectedStep.details}
                                   </p>
@@ -2254,8 +2256,8 @@ export default function Home() {
                                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
                                 </svg>
                               </div>
-                              <h4 className="font-semibold text-gray-900 text-sm">Document Parsed</h4>
-                              <p className="text-xs text-gray-600 mt-1">Content extracted and structured</p>
+                                                  <h4 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.documentParsed}</h4>
+                    <p className="text-xs text-gray-600 mt-1">{texts.analysisResults.contentExtracted}</p>
                             </div>
                             
                             <div className="bg-white/40 backdrop-blur-sm rounded-lg p-4 border border-gray-200 text-center">
@@ -2264,8 +2266,8 @@ export default function Home() {
                                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                                 </svg>
                               </div>
-                              <h4 className="font-semibold text-gray-900 text-sm">Data Organized</h4>
-                              <p className="text-xs text-gray-600 mt-1">Key information identified</p>
+                                                  <h4 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.dataOrganized}</h4>
+                    <p className="text-xs text-gray-600 mt-1">{texts.analysisResults.keyInformationIdentified}</p>
                             </div>
                             
                             <div className="bg-white/40 backdrop-blur-sm rounded-lg p-4 border border-gray-200 text-center">
@@ -2274,8 +2276,8 @@ export default function Home() {
                                   <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                                 </svg>
                               </div>
-                              <h4 className="font-semibold text-gray-900 text-sm">AI Ready</h4>
-                              <p className="text-xs text-gray-600 mt-1">Prepared for analysis</p>
+                                                  <h4 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.aiReady}</h4>
+                    <p className="text-xs text-gray-600 mt-1">{texts.analysisResults.preparedForAnalysis}</p>
                             </div>
                           </div>
 
@@ -2343,7 +2345,7 @@ export default function Home() {
                                   <div className="space-y-6">
                                     {/* Platforms Header */}
                                     <div>
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Identified Target Platforms</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.identifiedTargetPlatforms}</h4>
                                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {platformsData.platforms.map((platform: any, index: number) => (
                                           <div key={index} className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 text-center hover:shadow-lg transition-shadow duration-200">
@@ -2370,7 +2372,7 @@ export default function Home() {
                                </svg>
                                         </div>
                                         <div>
-                                          <h4 className="font-semibold text-gray-900 mb-2">Analysis Rationale</h4>
+                                          <h4 className="font-semibold text-gray-900 mb-2">{texts.analysisResults.analysisRationale}</h4>
                                           <div 
                                             className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
                                             dangerouslySetInnerHTML={{ 
@@ -2432,7 +2434,7 @@ export default function Home() {
                                                 <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                                               </svg>
                                             </div>
-                                            <h4 className="text-lg font-bold text-gray-900">Functional Requirements</h4>
+                                            <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.functionalRequirements}</h4>
                                             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                                               {requirementsData.functional.length}
                                             </span>
@@ -2457,7 +2459,7 @@ export default function Home() {
                                                 <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
                                               </svg>
                                             </div>
-                                            <h4 className="text-lg font-bold text-gray-900">Non-Functional Requirements</h4>
+                                            <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.nonFunctionalRequirements}</h4>
                                             <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
                                               {requirementsData.non_functional.length}
                                             </span>
@@ -2483,19 +2485,19 @@ export default function Home() {
                                           </svg>
                                         </div>
                                         <div>
-                                          <h4 className="font-semibold text-emerald-900 mb-2">Requirements Summary</h4>
+                                          <h4 className="font-semibold text-emerald-900 mb-2">{texts.analysisResults.requirementsSummary}</h4>
                                           <div className="grid grid-cols-2 gap-4 mb-3">
                                             <div className="text-center">
                                               <div className="text-2xl font-bold text-emerald-700">
                                                 {requirementsData.functional?.length || 0}
                                               </div>
-                                              <div className="text-xs text-emerald-600">Functional</div>
+                                              <div className="text-xs text-emerald-600">{texts.analysisResults.functional}</div>
                                             </div>
                                             <div className="text-center">
                                               <div className="text-2xl font-bold text-emerald-700">
                                                 {requirementsData.non_functional?.length || 0}
                                               </div>
-                                              <div className="text-xs text-emerald-600">Non-Functional</div>
+                                              <div className="text-xs text-emerald-600">{texts.analysisResults.nonFunctional}</div>
                                             </div>
                                           </div>
                                           <p className="text-emerald-800 text-sm leading-relaxed">
@@ -2520,7 +2522,7 @@ export default function Home() {
                                               <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                                  </svg>
                                           </div>
-                                          <h4 className="text-lg font-bold text-gray-900">Extracted Requirements</h4>
+                                          <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.extractedRequirements}</h4>
                                         </div>
                                         <div 
                                           className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
@@ -2733,7 +2735,7 @@ export default function Home() {
                                   <div className="space-y-6">
                                                                          {/* Tech Stack Grid - Filter out integrations and rationale */}
                                      <div>
-                                       <h4 className="text-lg font-bold text-gray-900 mb-4">Recommended Technology Stack</h4>
+                                       <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.recommendedTechnologyStack}</h4>
                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                          {Object.entries(techStackData).map(([category, technologies]: [string, any]) => {
                                            // Skip integrations, rationale, and ai_needed - they will be handled separately
@@ -2788,7 +2790,7 @@ export default function Home() {
                                              </svg>
                                            </div>
                                            <div className="flex-1">
-                                             <h4 className="font-semibold text-teal-900 mb-3">Third-Party Integrations</h4>
+                                             <h4 className="font-semibold text-teal-900 mb-3">{texts.analysisResults.thirdPartyIntegrations}</h4>
                                              <div className="space-y-2">
                                                {(Array.isArray(techStackData.integrations) ? techStackData.integrations : [techStackData.integrations]).map((integration: string, index: number) => (
                                                  <div key={index} className="flex items-center space-x-2">
@@ -2842,7 +2844,7 @@ export default function Home() {
                                  </svg>
                                         </div>
                                           <div>
-                                            <h4 className="font-semibold text-gray-900 mb-2">Technology Selection Rationale</h4>
+                                            <h4 className="font-semibold text-gray-900 mb-2">{texts.analysisResults.technologySelectionRationale}</h4>
                                             <div 
                                               className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
                                               dangerouslySetInnerHTML={{ 
@@ -2868,7 +2870,7 @@ export default function Home() {
                                               <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                                             </svg>
                                           </div>
-                                          <h4 className="text-lg font-bold text-gray-900">Technology Recommendations</h4>
+                                          <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.technologyRecommendations}</h4>
                                         </div>
                                         <div 
                                           className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
@@ -2931,7 +2933,7 @@ export default function Home() {
                                   <div className="space-y-6">
                                     {/* Team Overview */}
                                     <div>
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Team Structure Overview</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.teamStructureOverview}</h4>
                                       
                                                                              {/* Team Statistics */}
                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -2944,7 +2946,7 @@ export default function Home() {
                                            <div className="text-2xl font-bold text-blue-900">
                                              {teamData.roles.reduce((total: number, role: any) => total + role.fte, 0).toFixed(1)} FTE
                                            </div>
-                                           <div className="text-sm text-blue-700">Total Team Size</div>
+                                           <div className="text-sm text-blue-700">{texts.analysisResults.totalTeamSize}</div>
                                          </div>
                                          
                                          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 text-center">
@@ -2954,7 +2956,7 @@ export default function Home() {
                                              </svg>
                                            </div>
                                            <div className="text-2xl font-bold text-green-900">{teamData.roles.length}</div>
-                                           <div className="text-sm text-green-700">Distinct Roles</div>
+                                           <div className="text-sm text-green-700">{texts.analysisResults.distinctRoles}</div>
                                          </div>
                                          
                                          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-200 text-center">
@@ -2966,7 +2968,7 @@ export default function Home() {
                                            <div className="text-2xl font-bold text-orange-900">
                                              {teamData.roles.filter((role: any) => role.fte >= 1).length}/{teamData.roles.length}
                                            </div>
-                                           <div className="text-sm text-orange-700">Full-time Roles</div>
+                                           <div className="text-sm text-orange-700">{texts.analysisResults.fullTimeRoles}</div>
                                          </div>
                                        </div>
                                     </div>
@@ -3058,7 +3060,7 @@ export default function Home() {
                                  </svg>
             </div>
                       <div>
-                                            <h4 className="font-semibold text-gray-900 mb-2">Team Structure Rationale</h4>
+                                            <h4 className="font-semibold text-gray-900 mb-2">{texts.analysisResults.teamStructureRationale}</h4>
                                             <div 
                                               className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
                                               dangerouslySetInnerHTML={{ 
@@ -3086,7 +3088,7 @@ export default function Home() {
                                               <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
                     </div>
-                                          <h4 className="text-lg font-bold text-gray-900">Team Composition Analysis</h4>
+                                          <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.teamCompositionAnalysis}</h4>
                   </div>
                                         <div 
                                           className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
@@ -3161,7 +3163,7 @@ export default function Home() {
                                   <div className="space-y-6">
                                     {/* Timeline Overview */}
                                     <div>
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Project Timeline Estimates</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.projectTimelineEstimates}</h4>
                                       
                                       {/* Sprint Estimates */}
                                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -3172,7 +3174,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-green-900">{estimationData.min_sprints}</div>
-                                          <div className="text-sm text-green-700 mb-1">Best Case</div>
+                                          <div className="text-sm text-green-700 mb-1">{texts.analysisResults.bestCase}</div>
                                           <div className="text-xs text-green-600">{minWeeks} weeks • {minMonths} months</div>
                                         </div>
                                         
@@ -3183,7 +3185,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-blue-900">{avgSprints}</div>
-                                          <div className="text-sm text-blue-700 mb-1">Expected</div>
+                                          <div className="text-sm text-blue-700 mb-1">{texts.analysisResults.expected}</div>
                                           <div className="text-xs text-blue-600">{avgWeeks} weeks • {avgMonths} months</div>
                                         </div>
                                         
@@ -3194,7 +3196,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-orange-900">{estimationData.max_sprints}</div>
-                                          <div className="text-sm text-orange-700 mb-1">Worst Case</div>
+                                          <div className="text-sm text-orange-700 mb-1">{texts.analysisResults.worstCase}</div>
                                           <div className="text-xs text-orange-600">{maxWeeks} weeks • {maxMonths} months</div>
                                         </div>
                                       </div>
@@ -3202,13 +3204,13 @@ export default function Home() {
 
                                     {/* Timeline Visualization */}
                                     <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200">
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Sprint Timeline Breakdown</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.sprintTimelineBreakdown}</h4>
                                       
                                       {/* Visual Timeline */}
                                       <div className="space-y-4">
                                         {/* Min Timeline */}
                                         <div className="flex items-center space-x-4">
-                                          <div className="w-20 text-sm font-medium text-green-700">Best Case</div>
+                                          <div className="w-20 text-sm font-medium text-green-700">{texts.analysisResults.bestCase}</div>
                                           <div className="flex-1 bg-gray-200 rounded-full h-3 relative overflow-hidden">
                                             <div 
                                               className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full"
@@ -3220,7 +3222,7 @@ export default function Home() {
                                         
                                         {/* Expected Timeline */}
                                         <div className="flex items-center space-x-4">
-                                          <div className="w-20 text-sm font-medium text-blue-700">Expected</div>
+                                          <div className="w-20 text-sm font-medium text-blue-700">{texts.analysisResults.expected}</div>
                                           <div className="flex-1 bg-gray-200 rounded-full h-3 relative overflow-hidden">
                                             <div 
                                               className="h-full bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"
@@ -3232,7 +3234,7 @@ export default function Home() {
                                         
                                         {/* Max Timeline */}
                                         <div className="flex items-center space-x-4">
-                                          <div className="w-20 text-sm font-medium text-orange-700">Worst Case</div>
+                                          <div className="w-20 text-sm font-medium text-orange-700">{texts.analysisResults.worstCase}</div>
                                           <div className="flex-1 bg-gray-200 rounded-full h-3 relative overflow-hidden">
                                             <div className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full w-full" />
                                           </div>
@@ -3250,7 +3252,7 @@ export default function Home() {
                                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                             </svg>
                                           </div>
-                                          <h5 className="font-bold text-teal-900">Sprint Duration</h5>
+                                          <h5 className="font-bold text-teal-900">{texts.analysisResults.sprintDuration}</h5>
                                         </div>
                                         <div className="text-2xl font-bold text-teal-900 mb-1">2 weeks</div>
                                         <div className="text-sm text-teal-700">
@@ -3269,7 +3271,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div>
-                                            <h4 className="font-semibold text-gray-900 mb-2">Estimation Rationale</h4>
+                                            <h4 className="font-semibold text-gray-900 mb-2">{texts.analysisResults.estimationRationale}</h4>
                                             <div 
                                               className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
                                               dangerouslySetInnerHTML={{ 
@@ -3297,7 +3299,7 @@ export default function Home() {
                                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                                             </svg>
                                           </div>
-                                          <h4 className="text-lg font-bold text-gray-900">Effort Estimation Analysis</h4>
+                                          <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.effortEstimationAnalysis}</h4>
                                         </div>
                                         <div 
                                           className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
@@ -3366,7 +3368,7 @@ export default function Home() {
                                   <div className="space-y-6">
                                     {/* Plan Overview */}
                                     <div>
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Development Plan Overview</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.developmentPlanOverview}</h4>
                                       
                                       {/* Plan Statistics */}
                                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -3377,7 +3379,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-blue-900">{totalPhases}</div>
-                                          <div className="text-sm text-blue-700">Development Phases</div>
+                                          <div className="text-sm text-blue-700">{texts.analysisResults.developmentPhases}</div>
                                         </div>
                                         
                                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 text-center">
@@ -3387,7 +3389,7 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-green-900">{totalSprints}</div>
-                                          <div className="text-sm text-green-700">Total Sprints</div>
+                                          <div className="text-sm text-green-700">{texts.analysisResults.totalSprints}</div>
                                         </div>
                                         
                                         <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200 text-center">
@@ -3397,14 +3399,14 @@ export default function Home() {
                                             </svg>
                                           </div>
                                           <div className="text-2xl font-bold text-purple-900">{crossCuttingCategories}</div>
-                                          <div className="text-sm text-purple-700">Cross-cutting Areas</div>
+                                          <div className="text-sm text-purple-700">{texts.analysisResults.crossCuttingAreas}</div>
                                         </div>
                                       </div>
                                     </div>
 
                                     {/* Development Phases */}
                                     <div>
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Development Phases</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.developmentPhases}</h4>
                                       <div className="space-y-4">
                                         {planData.phases.map((phase: any, index: number) => {
                                           const duration = phase.sprints.end - phase.sprints.start + 1;
@@ -3469,7 +3471,7 @@ export default function Home() {
 
                                     {/* Timeline Visualization */}
                                     <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200">
-                                      <h4 className="text-lg font-bold text-gray-900 mb-4">Sprint Timeline</h4>
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.sprintTimeline}</h4>
                                       <div className="relative">
                                         <div className="flex items-center space-x-1 mb-2">
                                           {Array.from({ length: totalSprints }, (_, i) => (
@@ -3513,7 +3515,7 @@ export default function Home() {
                                     {/* Cross-cutting Concerns */}
                                     {planData.cross_cutting && Object.keys(planData.cross_cutting).length > 0 && (
                       <div>
-                                        <h4 className="text-lg font-bold text-gray-900 mb-4">Cross-cutting Concerns</h4>
+                                        <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.crossCuttingConcerns}</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                           {Object.entries(planData.cross_cutting).map(([category, items]: [string, any], index: number) => {
                                             const categoryColors = [
@@ -3575,7 +3577,7 @@ export default function Home() {
                                               <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                                             </svg>
                                           </div>
-                                          <h4 className="text-lg font-bold text-gray-900">Development Roadmap</h4>
+                                          <h4 className="text-lg font-bold text-gray-900">{texts.analysisResults.developmentRoadmap}</h4>
                                         </div>
                                         <div 
                                           className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
@@ -3636,9 +3638,9 @@ export default function Home() {
                         </div>
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {selectedStep.status === 'pending' ? 'Waiting to Start' :
-                           selectedStep.status === 'in_progress' ? 'Currently Processing' : 
-                           selectedStep.status === 'error' ? 'Step Failed' : 'Analysis Complete'}
+                          {selectedStep.status === 'pending' ? texts.analysis.waitingToStart :
+                           selectedStep.status === 'in_progress' ? texts.analysis.currentlyProcessing : 
+                           selectedStep.status === 'error' ? texts.errors.stepFailed : texts.general.complete}
                         </h3>
                         <p className="text-gray-600 max-w-lg mx-auto">
                           {selectedStep.status === 'pending' ? 
@@ -3749,13 +3751,13 @@ export default function Home() {
                             <div className="text-2xl font-bold text-blue-600">
                               {steps.filter(step => step.status === 'done').length}
                             </div>
-                            <div className="text-sm text-gray-600">Completed</div>
+                            <div className="text-sm text-gray-600">{texts.general.completed}</div>
                           </div>
                           <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
                             <div className="text-2xl font-bold text-gray-600">
                               {steps.length}
                             </div>
-                            <div className="text-sm text-gray-600">Total Steps</div>
+                            <div className="text-sm text-gray-600">{texts.general.totalSteps}</div>
                           </div>
                         </div>
                       </div>
@@ -3772,10 +3774,10 @@ export default function Home() {
           <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6">
             <div className="text-center mb-6">
               <h3 className="text-lg font-bold text-blue-900 mb-2">
-                ✨ Want More Advanced Features?
+                {texts.pageContent.wantMoreFeatures}
               </h3>
               <p className="text-blue-700 text-sm">
-                Upgrade to the full Q Estimation Tool for comprehensive project planning
+                {texts.pageContent.upgradeDescription}
               </p>
             </div>
             
@@ -3785,9 +3787,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
                   </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">Detailed Estimation</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.analysisResults.detailedEstimation}</h4>
                 </div>
-                <p className="text-xs text-blue-700">Per-technology estimates, financial analysis, and discovery deliverables</p>
+                <p className="text-xs text-blue-700">{texts.analysisResults.detailedEstimationDescription}</p>
               </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-blue-200">
@@ -3795,9 +3797,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">Risk Analysis</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.features.riskAnalysis}</h4>
                     </div>
-                <p className="text-xs text-blue-700">Risk identification, mitigation strategies, and regulatory compliance</p>
+                <p className="text-xs text-blue-700">{texts.features.riskAnalysisDescription}</p>
                   </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-blue-200">
@@ -3805,9 +3807,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                   </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">Manual Control</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.features.manualControl}</h4>
               </div>
-                <p className="text-xs text-blue-700">Human oversight, manual steering, and approval workflows</p>
+                <p className="text-xs text-blue-700">{texts.features.manualControlDescription}</p>
               </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-blue-200">
@@ -3815,9 +3817,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                   </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">Integrations</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.analysisResults.integrations}</h4>
                 </div>
-                <p className="text-xs text-blue-700">Google Slides proposals, HubSpot sync, and workflow automation</p>
+                <p className="text-xs text-blue-700">{texts.analysisResults.integrationsDescription}</p>
               </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-blue-200">
@@ -3825,9 +3827,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">On-Premise</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.analysisResults.onPremise}</h4>
                 </div>
-                <p className="text-xs text-blue-700">Private deployment, open-source AI models, and enhanced security</p>
+                <p className="text-xs text-blue-700">{texts.analysisResults.onPremiseDescription}</p>
               </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-blue-200">
@@ -3835,9 +3837,9 @@ export default function Home() {
                   <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                   </svg>
-                  <h4 className="font-semibold text-blue-900 text-sm">Advanced Planning</h4>
+                  <h4 className="font-semibold text-blue-900 text-sm">{texts.analysisResults.advancedPlanning}</h4>
                 </div>
-                <p className="text-xs text-blue-700">Per-task estimation, technical roadmaps, and discovery steps</p>
+                <p className="text-xs text-blue-700">{texts.analysisResults.advancedPlanningDescription}</p>
               </div>
             </div>
             
@@ -3864,7 +3866,7 @@ export default function Home() {
             <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900">Legal Disclaimer</h3>
+                  <h3 className="text-lg font-bold text-gray-900">{texts.fileUpload.legalDisclaimer}</h3>
                   <button
                     onClick={() => setShowDisclaimerModal(false)}
                     className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -3892,21 +3894,21 @@ export default function Home() {
                 </div>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">Legal Compliance</h4>
+                  <h4 className="font-semibold text-gray-900">{texts.analysisResults.legalCompliance}</h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
                     You are responsible for ensuring that your uploads do not violate any applicable laws, regulations, or third-party rights. This includes but is not limited to copyright, trademark, privacy, and data protection laws.
                   </p>
                 </div>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">AI Analysis Disclaimer</h4>
+                  <h4 className="font-semibold text-gray-900">{texts.analysisResults.aiAnalysisDisclaimer}</h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
                     The analysis provided by this platform is generated using artificial intelligence and should be used as a reference tool only. Results are estimates and recommendations based on the information provided. We do not guarantee the accuracy, completeness, or suitability of the analysis for any specific purpose.
                   </p>
                 </div>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">Limitation of Liability</h4>
+                  <h4 className="font-semibold text-gray-900">{texts.analysisResults.limitationOfLiability}</h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
                     This platform is provided "as is" without warranties of any kind. We shall not be liable for any damages arising from the use of this platform or reliance on the analysis results.
                   </p>
@@ -3918,7 +3920,7 @@ export default function Home() {
                   onClick={() => setShowDisclaimerModal(false)}
                   className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                 >
-                  I Understand
+                  {texts.general.understand}
                       </button>
               </div>
             </div>

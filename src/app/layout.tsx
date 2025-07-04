@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { en } from "@/lib/localization";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Estimation Tool SSE Client",
-  description: "Real-time estimation tool updates via Server-Sent Events",
+  title: en.layout.title,
+  description: en.layout.description,
 };
 
 export default function RootLayout({

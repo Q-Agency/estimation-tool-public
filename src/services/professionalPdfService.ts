@@ -2,6 +2,7 @@ import puppeteer, { Browser } from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 import fs from 'fs';
 import path from 'path';
+import { en } from '@/lib/localization';
 
 export interface PdfGenerationOptions {
   title?: string;
@@ -159,35 +160,34 @@ export class ProfessionalPdfService {
           <div class="cover-header">
             <div class="logo-section">
               ${qLogoBase64 ? `<img src="${qLogoBase64}" alt="Q Logo" class="company-logo" />` : '<div class="logo-placeholder">Q</div>'}
-              <h1 class="company-name">Estimation Tool</h1>
+              <h1 class="company-name">${en.pdf.estimationTool}</h1>
             </div>
           </div>
           
           <div class="cover-main">
             ${aiPoweredBase64 ? `<img src="${aiPoweredBase64}" alt="AI Powered" class="ai-powered-image" />` : ''}
-            <h1 class="cover-title">${options.title || 'Project Estimation Report'}</h1>
-            <div class="cover-subtitle">Basic Analysis & Recommendations</div>
+            <h1 class="cover-title">${options.title || en.pdf.projectEstimationReport}</h1>
+            <div class="cover-subtitle">${en.pdf.basicAnalysisRecommendations}</div>
             
             <div class="cover-details">
               <div class="detail-item">
-                <span class="detail-label">RFP Document:</span>
-                <span class="detail-value">${options.rfpFileName || 'Unknown RFP'}</span>
+                <span class="detail-label">${en.pdf.rfpDocument}:</span>
+                <span class="detail-value">${options.rfpFileName || en.pdf.unknownRfp}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Generated:</span>
+                <span class="detail-label">${en.pdf.generated}:</span>
                 <span class="detail-value">${currentDate}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Document Type:</span>
-                <span class="detail-value">Basic RFP Analysis</span>
+                <span class="detail-label">${en.pdf.documentType}:</span>
+                <span class="detail-value">${en.pdf.basicRfpAnalysis}</span>
               </div>
             </div>
           </div>
           
           <div class="cover-footer">
             <div class="disclaimer">
-              This document contains AI-generated analysis and recommendations based on the uploaded RFP. 
-              Please review all details carefully before making business decisions.
+              ${en.pdf.aiDisclaimer}
             </div>
           </div>
         </div>
@@ -199,8 +199,8 @@ export class ProfessionalPdfService {
     return `
       <div style="font-size: 9pt; color: #6b7280; text-align: center; width: 100%; margin: 0 20px;">
         <div style="border-bottom: 0.5pt solid #e5e7eb; padding-bottom: 8pt; margin-top: 12pt;">
-          <span style="font-weight: 600;">${options.title || 'Project Estimation Report'}</span>
-          <span style="float: right; font-weight: 400;">Generated ${new Date().toLocaleDateString()}</span>
+          <span style="font-weight: 600;">${options.title || en.pdf.projectEstimationReport}</span>
+          <span style="float: right; font-weight: 400;">${en.pdf.generated} ${new Date().toLocaleDateString()}</span>
         </div>
       </div>
     `;
@@ -210,9 +210,9 @@ export class ProfessionalPdfService {
     return `
       <div style="font-size: 8pt; color: #6b7280; text-align: center; width: 100%; margin: 0 20px;">
         <div style="border-top: 0.5pt solid #e5e7eb; padding-top: 6pt; margin-bottom: 8pt;">
-          <span style="float: left;">Basic Analysis</span>
-          <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
-          <span style="float: right;">Q - AI Estimation Tool</span>
+          <span style="float: left;">${en.pdf.basicAnalysis}</span>
+          <span>${en.pdf.page} <span class="pageNumber"></span> ${en.pdf.of} <span class="totalPages"></span></span>
+          <span style="float: right;">${en.pdf.qAiEstimationTool}</span>
         </div>
       </div>
     `;

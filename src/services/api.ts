@@ -1,5 +1,6 @@
 import { config } from '@/lib/config';
 import { toast } from 'react-hot-toast';
+import { en } from '@/lib/localization';
 
 /**
  * Upload a file to the server
@@ -10,7 +11,7 @@ export const uploadFile = async (
   onProgress?: (progress: number) => void
 ): Promise<boolean> => {
   if (file.type !== 'application/pdf') {
-    toast.error('Please upload a PDF file');
+    toast.error(en.errors.pleaseUploadPdf);
     return false;
   }
 
@@ -32,13 +33,13 @@ export const uploadFile = async (
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(true);
       } else {
-        toast.error(`Upload failed: ${xhr.statusText}`);
+        toast.error(en.errors.uploadFailedWithStatus.replace('{status}', xhr.statusText));
         resolve(false);
       }
     });
 
     xhr.addEventListener('error', () => {
-      toast.error('Upload failed. Please try again.');
+      toast.error(en.errors.uploadFailedTryAgain);
       reject(new Error('Upload failed'));
     });
 
@@ -53,7 +54,7 @@ export const uploadFile = async (
 export const sendToEmail = async (
   email: string,
   pdfBlob: Blob,
-  reportTitle: string = 'Estimation Report',
+  reportTitle: string = en.pdf.projectEstimationReport,
   fileName?: string
 ): Promise<boolean> => {
   try {
@@ -71,15 +72,15 @@ export const sendToEmail = async (
 
     if (response.ok) {
       const result = await response.text();
-      toast.success('Report sent successfully!');
+      toast.success(en.success.reportSentSuccess);
       return true;
     } else {
-      toast.error('Failed to send report. Please try again.');
+      toast.error(en.errors.failedToSendReport);
       return false;
     }
   } catch (error) {
     console.error('Error sending email:', error);
-    toast.error('Failed to send report. Please try again.');
+    toast.error(en.errors.failedToSendReport);
     return false;
   }
 };

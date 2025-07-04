@@ -1,60 +1,61 @@
 import { Step } from '@/types';
+import { en } from '@/lib/localization';
 
 export const INITIAL_STEPS: Step[] = [
   {
     id: 'document_preparation',
-    title: 'Preparation',
+    title: en.steps.documentPreparation.title,
     status: 'pending',
-    description: 'Structuring and preparing document for analysis',
-    details: 'Your uploaded RFP document is being processed and structured. The system is extracting text content, analyzing document layout, and preparing the data for comprehensive AI analysis.'
+    description: en.steps.documentPreparation.description,
+    details: en.steps.documentPreparation.details
   },
   { 
     id: 'platforms', 
-    title: 'Platforms', 
+    title: en.steps.platforms.title, 
     status: 'pending',
-    description: 'Identify target platforms and technologies',
-    details: 'Analyzing the document to identify which platforms the solution will need to support (web, mobile, backend, admin portal, etc.) based on the project requirements.'
+    description: en.steps.platforms.description,
+    details: en.steps.platforms.details
   },
   { 
     id: 'requirements', 
-    title: 'Requirements', 
+    title: en.steps.requirements.title, 
     status: 'pending',
-    description: 'Extract functional and non-functional requirements',
-    details: 'Analyzing the document to identify and categorize all functional and non-functional requirements specified in the RFP.'
+    description: en.steps.requirements.description,
+    details: en.steps.requirements.details
   },
   { 
     id: 'techstack', 
-    title: 'Techstack', 
+    title: en.steps.techstack.title, 
     status: 'pending',
-    description: 'Determine optimal technology stack',
-    details: 'Analyzing requirements and constraints to recommend the most suitable technology stack for the project implementation.'
+    description: en.steps.techstack.description,
+    details: en.steps.techstack.details
   },
   { 
     id: 'team_composition', 
-    title: 'Team', 
+    title: en.steps.teamComposition.title, 
     status: 'pending',
-    description: 'Determine optimal team structure',
-    details: 'Analyzing project requirements and technology stack to recommend the optimal team composition, roles, and resource allocation.'
+    description: en.steps.teamComposition.description,
+    details: en.steps.teamComposition.details
   },
   { 
     id: 'effort_estimation', 
-    title: 'Estimate', 
+    title: en.steps.effortEstimation.title, 
     status: 'pending',
-    description: 'Estimate effort required for each component',
-    details: 'Based on the analyzed requirements, technology stack, and team composition, calculating the effort required for project implementation in sprint cycles.'
+    description: en.steps.effortEstimation.description,
+    details: en.steps.effortEstimation.details
   },
   { 
     id: 'development_plan', 
-    title: 'Roadmap', 
+    title: en.steps.developmentPlan.title, 
     status: 'pending',
-    description: 'Create detailed development roadmap',
-    details: 'A comprehensive development plan is generated, outlining phases, milestones, and timelines for the project implementation.'
+    description: en.steps.developmentPlan.description,
+    details: en.steps.developmentPlan.details
   },
   { 
     id: 'final_report', 
-    title: 'Final Report', 
+    title: en.steps.finalReport.title, 
     status: 'pending',
-    description: 'Generate comprehensive estimation report',
-    details: 'The final report provides a complete summary of the analysis, including cost estimates, timeline projections, and recommendations for project execution.'
+    description: en.steps.finalReport.description,
+    details: en.steps.finalReport.details
   },
 ]; 

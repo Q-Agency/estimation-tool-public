@@ -1,3 +1,5 @@
+import { en } from '@/lib/localization';
+
 /**
  * Enhanced markup converter optimized for professional PDF generation
  * Includes proper page breaks, professional styling, and executive-level formatting
@@ -230,7 +232,7 @@ export const generateTableOfContents = (html: string): string => {
   if (headings.length === 0) return '';
   
   let toc = '<div class="table-of-contents section-break no-break">';
-  toc += '<h1>Table of Contents</h1>';
+  toc += `<h1>${en.pdf.tableOfContents}</h1>`;
   toc += '<div class="toc-list">';
   
   headings.forEach((heading, index) => {
@@ -264,7 +266,7 @@ export const ensureExecutiveSummary = (html: string): string => {
   if (firstParagraph) {
     const summary = `
       <div class="executive-summary section no-break">
-        <h2>Executive Summary</h2>
+        <h2>${en.pdf.executiveSummary}</h2>
         ${firstParagraph[0]}
       </div>
     `;

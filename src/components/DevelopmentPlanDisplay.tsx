@@ -1,22 +1,24 @@
 import { DevelopmentPlan } from '@/types';
+import { useLocalization } from '@/lib/localization';
 
 interface DevelopmentPlanDisplayProps {
   plan: DevelopmentPlan;
 }
 
 export const DevelopmentPlanDisplay = ({ plan }: DevelopmentPlanDisplayProps) => {
+  const { t } = useLocalization();
   return (
     <div className="space-y-6">
       {/* Phases Section */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800">Development Phases</h3>
+        <h3 className="text-xl font-semibold text-gray-800">{t.developmentPlan.phases}</h3>
         <div className="space-y-6">
           {plan.phases.map((phase, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <h4 className="text-lg font-medium text-gray-800">{phase.name}</h4>
                 <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                  Sprints {phase.sprints.start}-{phase.sprints.end}
+                  {t.general.sprints} {phase.sprints.start}-{phase.sprints.end}
                 </span>
               </div>
               <ul className="space-y-2">
@@ -34,7 +36,7 @@ export const DevelopmentPlanDisplay = ({ plan }: DevelopmentPlanDisplayProps) =>
 
       {/* Cross-cutting Concerns Section */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800">Cross-cutting Concerns</h3>
+        <h3 className="text-xl font-semibold text-gray-800">{t.developmentPlan.crossCuttingConcerns}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(plan.cross_cutting).map(([category, items]: [string, string[]]) => (
             <div key={category} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
