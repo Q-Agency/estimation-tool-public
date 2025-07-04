@@ -68,6 +68,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['react-hot-toast'],
   },
+  
+  // Lambda-specific optimizations (moved from experimental)
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
 };
 
 export default nextConfig;

@@ -1,4 +1,5 @@
-import puppeteer, { Browser } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import fs from 'fs';
 import path from 'path';
 
@@ -30,17 +31,39 @@ export class ProfessionalPdfService {
 
   private async getBrowser(): Promise<Browser> {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-web-security',
-          '--font-render-hinting=none',
-          '--disable-features=VizDisplayCompositor'
-        ]
-      });
+      // Check if we're in AWS Lambda environment
+      const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+      
+      if (isLambda) {
+        // AWS Lambda configuration
+        this.browser = await puppeteer.launch({
+          args: [
+            ...chromium.args,
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-web-security',
+            '--font-render-hinting=none',
+            '--disable-features=VizDisplayCompositor'
+          ],
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        });
+      } else {
+        // Local development configuration
+        this.browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-web-security',
+            '--font-render-hinting=none',
+            '--disable-features=VizDisplayCompositor'
+          ]
+        });
+      }
     }
     return this.browser;
   }
@@ -702,11 +725,47 @@ export class ProfessionalPdfService {
 
   private getImageAsBase64(imagePath: string): string {
     try {
-      const fullPath = path.join(process.cwd(), 'public', imagePath);
-      const imageBuffer = fs.readFileSync(fullPath);
-      const base64 = imageBuffer.toString('base64');
-      const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
-      return `data:${mimeType};base64,${base64}`;
+      // Check if we're in AWS Lambda environment
+      const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+      
+      let fullPath: string;
+      if (isLambda) {
+        // In Lambda, try different possible paths
+        const possiblePaths = [
+          path.join(process.cwd(), 'public', imagePath),
+          path.join(process.cwd(), '.next', 'static', imagePath),
+          path.join('/var/task', 'public', imagePath),
+          path.join('/var/task/.next/static', imagePath)
+        ];
+        
+        let imageBuffer: Buffer | null = null;
+        for (const testPath of possiblePaths) {
+          try {
+            if (fs.existsSync(testPath)) {
+              imageBuffer = fs.readFileSync(testPath);
+              break;
+            }
+          } catch (e) {
+            // Continue to next path
+          }
+        }
+        
+        if (!imageBuffer) {
+          console.warn(`Could not find image ${imagePath} in Lambda environment`);
+          return '';
+        }
+        
+        const base64 = imageBuffer.toString('base64');
+        const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        return `data:${mimeType};base64,${base64}`;
+      } else {
+        // Local development
+        fullPath = path.join(process.cwd(), 'public', imagePath);
+        const imageBuffer = fs.readFileSync(fullPath);
+        const base64 = imageBuffer.toString('base64');
+        const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        return `data:${mimeType};base64,${base64}`;
+      }
     } catch (error) {
       console.error(`Error loading image ${imagePath}:`, error);
       return '';

@@ -5,6 +5,9 @@ frontend:
       commands:
         - echo "Installing dependencies..."
         - npm ci
+        # Set environment variables for Lambda optimization
+        - export AWS_LAMBDA_FUNCTION_NAME=true
+        - export NODE_ENV=production
     build:
       commands:
         - echo "Building the Next.js app..."
