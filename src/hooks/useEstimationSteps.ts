@@ -192,19 +192,53 @@ export const useEstimationSteps = () => {
         if (platformsDataToProcess && platformsDataToProcess.platforms) {
           console.log('✅ Platforms data found:', platformsDataToProcess);
           
-          // Extract and log traceability data if present
+          // Handle traceability data - it might be nested in traceability object or at root level as highlight_data
+          let traceabilityData = null;
+          
           if (platformsDataToProcess.traceability) {
+            // Standard structure: traceability object exists
+            traceabilityData = platformsDataToProcess.traceability;
+          } else if ((platformsDataToProcess as any).highlight_data) {
+            // Alternative structure: highlight_data at root level
+            const highlightData = (platformsDataToProcess as any).highlight_data;
+            if (Array.isArray(highlightData) && highlightData.length > 0) {
+              // Extract cited_references from highlight_data
+              const citedReferences = Array.from(new Set(highlightData.map((h: any) => h.ref_number).filter((n: any) => n != null))).sort((a: any, b: any) => a - b);
+              const pagesAffected = Array.from(new Set(highlightData.map((h: any) => h.page).filter((p: any) => p != null))).sort((a: any, b: any) => a - b);
+              
+              // Construct traceability object
+              traceabilityData = {
+                cited_references: citedReferences,
+                highlight_data: highlightData,
+                total_highlights: highlightData.length,
+                pages_affected: pagesAffected
+              };
+              
+              // Add traceability to platformsDataToProcess for consistency
+              platformsDataToProcess.traceability = traceabilityData;
+              
+              console.log('📊 Traceability data constructed from highlight_data:', {
+                cited_references: traceabilityData.cited_references,
+                total_highlights: traceabilityData.total_highlights,
+                pages_affected: traceabilityData.pages_affected,
+                highlight_count: traceabilityData.highlight_data.length
+              });
+            }
+          }
+          
+          // Extract and log traceability data if present
+          if (traceabilityData) {
             console.log('📊 Traceability data found:', {
-              cited_references: platformsDataToProcess.traceability.cited_references,
-              total_highlights: platformsDataToProcess.traceability.total_highlights,
-              pages_affected: platformsDataToProcess.traceability.pages_affected,
-              highlight_count: platformsDataToProcess.traceability.highlight_data?.length || 0
+              cited_references: traceabilityData.cited_references,
+              total_highlights: traceabilityData.total_highlights,
+              pages_affected: traceabilityData.pages_affected,
+              highlight_count: traceabilityData.highlight_data?.length || 0
             });
             
             // Log detailed highlight data with text and text_preview
-            if (platformsDataToProcess.traceability.highlight_data && platformsDataToProcess.traceability.highlight_data.length > 0) {
+            if (traceabilityData.highlight_data && traceabilityData.highlight_data.length > 0) {
               console.log('📝 Highlight data details:');
-              platformsDataToProcess.traceability.highlight_data.forEach((highlight: any, index: number) => {
+              traceabilityData.highlight_data.forEach((highlight: any, index: number) => {
                 console.log(`  Highlight ${index + 1}:`, {
                   ref_number: highlight.ref_number,
                   chunk_id: highlight.chunk_id,

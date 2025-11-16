@@ -5,6 +5,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import { config, validateConfig } from '@/lib/config';
 import { convertMarkupToHtml } from '@/utils/markupConverter';
 import { ConnectionIndicator } from '@/components/ConnectionIndicator';
+import { RationaleWithTraceability } from '@/components/RationaleWithTraceability';
 import { useSSE } from '@/hooks/useSSE';
 import { useEstimationSteps } from '@/hooks/useEstimationSteps';
 import { useApiMode } from '@/hooks/useApiMode';
@@ -2426,11 +2427,9 @@ export default function Home() {
                                         </div>
                                         <div>
                                           <h4 className="font-semibold text-gray-900 mb-2">{texts.analysisResults.analysisRationale}</h4>
-                                          <div 
-                                            className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700"
-                                            dangerouslySetInnerHTML={{ 
-                                              __html: convertMarkupToHtml(platformsData.rationale) 
-                                            }}
+                                          <RationaleWithTraceability
+                                            rationale={platformsData.rationale}
+                                            traceability={platformsData.traceability}
                                           />
                                         </div>
                                       </div>
