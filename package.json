@@ -14,17 +14,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^131.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/puppeteer": "^5.4.7",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "next": "15.2.4",
-    "@sparticuz/chromium": "^131.0.0",
+    "pdfjs-dist": "^5.4.394",
     "puppeteer-core": "^23.10.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
+    "react-pdf": "^10.2.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

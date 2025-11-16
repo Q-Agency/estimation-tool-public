@@ -108,9 +108,34 @@ export interface PlatformInfo {
   text: string;
 }
 
+export interface HighlightCoordinates {
+  b: number;
+  l: number;
+  r: number;
+  t: number;
+  coord_origin: string;
+}
+
+export interface HighlightData {
+  ref_number: number;
+  chunk_id: string;
+  page: number;
+  coordinates: HighlightCoordinates;
+  text?: string;
+  text_preview?: string;
+}
+
+export interface TraceabilityData {
+  cited_references: number[];
+  highlight_data: HighlightData[];
+  total_highlights: number;
+  pages_affected: number[];
+}
+
 export interface PlatformsData {
   platforms: PlatformInfo[];
   rationale: string;
+  traceability?: TraceabilityData;
 }
 
 export interface RequirementsData {

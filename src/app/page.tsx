@@ -7,12 +7,14 @@ import { convertMarkupToHtml } from '@/utils/markupConverter';
 import { ConnectionIndicator } from '@/components/ConnectionIndicator';
 import { useSSE } from '@/hooks/useSSE';
 import { useEstimationSteps } from '@/hooks/useEstimationSteps';
+import { useApiMode } from '@/hooks/useApiMode';
 import { EmailFormData, UploadResponse } from '@/types';
-import { sendToEmail } from '@/services/api';
+import { sendToEmail, getNgrokHeaders } from '@/services/api';
 import { useLocalization } from '@/lib/localization';
 
 export default function Home() {
   const { t: texts } = useLocalization();
+  const { mode, apiBaseUrl, toggleMode } = useApiMode();
   // File upload state
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -451,7 +453,14 @@ export default function Home() {
           setUploadResponseData(null);
         });
 
-      xhr.open('POST', `${config.apiBaseUrl}/rfp-upload`);
+      xhr.open('POST', `${apiBaseUrl}/rfp-upload`);
+      
+      // Add ngrok header if needed
+      const ngrokHeaders = getNgrokHeaders(apiBaseUrl);
+      Object.keys(ngrokHeaders).forEach(key => {
+        xhr.setRequestHeader(key, ngrokHeaders[key]);
+      });
+      
       xhr.send(formData);
     } catch (error) {
       console.error('Upload error:', error);
@@ -587,10 +596,11 @@ export default function Home() {
         setAnalysisStarted(true);
         startFilePreparation();
 
-        const response = await fetch(`${config.apiBaseUrl}/rfp-analyse`, {
+        const response = await fetch(`${apiBaseUrl}/rfp-analyse`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...getNgrokHeaders(apiBaseUrl)
           },
           body: JSON.stringify({
             sessionId: sessionId, // Same session ID for same file
@@ -643,6 +653,7 @@ export default function Home() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getNgrokHeaders()
         },
         body: JSON.stringify({
           sessionId: sessionId, // Use the sessionId from backend response
@@ -1381,6 +1392,48 @@ export default function Home() {
                   </div>
                                       <h3 className="font-semibold text-gray-900 text-sm">{texts.analysisResults.timelineEstimates}</h3>
                   <p className="text-xs text-gray-600 mt-1">Sprint & milestone planning</p>
+                </div>
+              </div>
+            </div>
+
+            {/* API Mode Toggle */}
+            <div className="max-w-lg mx-auto mb-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      mode === 'production' ? 'bg-green-100' : 'bg-blue-100'
+                    }`}>
+                      <svg className={`w-4 h-4 ${
+                        mode === 'production' ? 'text-green-600' : 'text-blue-600'
+                      }`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">API Mode</p>
+                      <p className="text-xs text-gray-500">
+                        {mode === 'production' ? 'Production' : 'Test'}
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={mode === 'production'}
+                      onChange={toggleMode}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-700">
+                      {mode === 'production' ? 'Production' : 'Test'}
+                    </span>
+                  </label>
+                </div>
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <p className="text-xs text-gray-500 truncate" title={apiBaseUrl}>
+                    {apiBaseUrl}
+                  </p>
                 </div>
               </div>
             </div>

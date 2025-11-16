@@ -3,6 +3,19 @@ import { toast } from 'react-hot-toast';
 import { en } from '@/lib/localization';
 
 /**
+ * Get ngrok-specific headers if the API URL is an ngrok URL
+ */
+export const getNgrokHeaders = (apiBaseUrl?: string): Record<string, string> => {
+  const apiUrl = apiBaseUrl || config.apiBaseUrl;
+  if (apiUrl.includes('ngrok-free.app') || apiUrl.includes('ngrok.io')) {
+    return {
+      'ngrok-skip-browser-warning': 'true'
+    };
+  }
+  return {};
+};
+
+/**
  * Upload a file to the server
  */
 export const uploadFile = async (
@@ -44,6 +57,13 @@ export const uploadFile = async (
     });
 
     xhr.open('POST', `${config.apiBaseUrl}/rfp-upload`);
+    
+    // Add ngrok header if needed
+    const ngrokHeaders = getNgrokHeaders();
+    Object.keys(ngrokHeaders).forEach(key => {
+      xhr.setRequestHeader(key, ngrokHeaders[key]);
+    });
+    
     xhr.send(formData);
   });
 };
@@ -65,8 +85,12 @@ export const sendToEmail = async (
       formData.append('fileName', fileName);
     }
 
+    const ngrokHeaders = getNgrokHeaders();
     const response = await fetch(`${config.apiBaseUrl}/sendToEmail`, {
       method: 'POST',
+      headers: {
+        ...ngrokHeaders
+      },
       body: formData
     });
 

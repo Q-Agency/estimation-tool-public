@@ -21,11 +21,16 @@ const getEnvironment = (): AppConfig['environment'] => {
 
 const environment = getEnvironment();
 
+// Default API URLs (can be overridden by useApiMode hook)
+const DEFAULT_PRODUCTION_API = 'https://your-production-api.com/api';
+const DEFAULT_TEST_API = 'https://infinite-wasp-terminally.ngrok-free.app/webhook-test';
+const DEFAULT_DEV_API = 'https://infinite-wasp-terminally.ngrok-free.app/webhook';
+
 export const config: AppConfig = {
   apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 
     (environment === 'production' 
-      ? 'https://your-production-api.com/api'
-      : 'https://infinite-wasp-terminally.ngrok-free.app/webhook-test'
+      ? DEFAULT_PRODUCTION_API
+      : DEFAULT_DEV_API
     ),
   
   sseBaseUrl: process.env.NEXT_PUBLIC_SSE_BASE_URL || 

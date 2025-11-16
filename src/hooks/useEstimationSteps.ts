@@ -163,16 +163,61 @@ export const useEstimationSteps = () => {
           console.log('📤 Processing from output field');
           const parsedData = JSON.parse(data.output);
           platformsDataToProcess = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+          
+          // Handle nested output field if present (double-encoded JSON)
+          if (platformsDataToProcess && typeof platformsDataToProcess.output === 'string') {
+            console.log('📤 Processing nested output field');
+            const nestedParsed = JSON.parse(platformsDataToProcess.output);
+            platformsDataToProcess = Array.isArray(nestedParsed) ? nestedParsed[0] : nestedParsed;
+          }
         }
         // If there's a direct platforms property (alternative structure)
         else if ((data as any).platforms) {
           console.log('📤 Processing from direct platforms field');
-          const parsedData = JSON.parse((data as any).platforms);
-          platformsDataToProcess = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+          let parsedData = JSON.parse((data as any).platforms);
+          
+          // Handle nested output field if present (double-encoded JSON)
+          if (parsedData && typeof parsedData.output === 'string') {
+            console.log('📤 Processing nested output field from platforms');
+            const nestedParsed = JSON.parse(parsedData.output);
+            parsedData = Array.isArray(nestedParsed) ? nestedParsed[0] : nestedParsed;
+          } else {
+            // If not nested, handle array structure
+            parsedData = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+          }
+          
+          platformsDataToProcess = parsedData;
         }
         
         if (platformsDataToProcess && platformsDataToProcess.platforms) {
           console.log('✅ Platforms data found:', platformsDataToProcess);
+          
+          // Extract and log traceability data if present
+          if (platformsDataToProcess.traceability) {
+            console.log('📊 Traceability data found:', {
+              cited_references: platformsDataToProcess.traceability.cited_references,
+              total_highlights: platformsDataToProcess.traceability.total_highlights,
+              pages_affected: platformsDataToProcess.traceability.pages_affected,
+              highlight_count: platformsDataToProcess.traceability.highlight_data?.length || 0
+            });
+            
+            // Log detailed highlight data with text and text_preview
+            if (platformsDataToProcess.traceability.highlight_data && platformsDataToProcess.traceability.highlight_data.length > 0) {
+              console.log('📝 Highlight data details:');
+              platformsDataToProcess.traceability.highlight_data.forEach((highlight: any, index: number) => {
+                console.log(`  Highlight ${index + 1}:`, {
+                  ref_number: highlight.ref_number,
+                  chunk_id: highlight.chunk_id,
+                  page: highlight.page,
+                  text_preview: highlight.text_preview || 'N/A',
+                  text_length: highlight.text ? highlight.text.length : 0,
+                  has_full_text: !!highlight.text
+                });
+              });
+            }
+          } else {
+            console.log('ℹ️ No traceability data found in platforms response (backward compatible)');
+          }
           
           // Update step status based on the received event
           setSteps((prevSteps) => {
@@ -183,7 +228,7 @@ export const useEstimationSteps = () => {
               // Mark current step as done
               newSteps[currentStepIndex].status = 'done';
               
-              // Store the structured data
+              // Store the structured data (traceability will be included if present)
               newSteps[currentStepIndex].platforms_data = platformsDataToProcess;
               
               // Create formatted details for display
