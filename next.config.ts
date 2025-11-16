@@ -71,6 +71,60 @@ const nextConfig: NextConfig = {
   
   // Lambda-specific optimizations (moved from experimental)
   serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+  
+  // Webpack configuration for pdfjs-dist
+  webpack: (config: any, { isServer }: any) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+        stream: false,
+        zlib: false,
+        util: false,
+        buffer: false,
+        assert: false,
+        http: false,
+        https: false,
+        url: false,
+        os: false,
+      };
+      
+      // Ignore pdfjs-dist worker files during bundling
+      config.module = config.module || {};
+      config.module.rules = config.module.rules || [];
+      config.module.rules.push({
+        test: /pdf\.worker\.(min\.)?js/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/worker/[hash][ext][query]',
+        },
+      });
+      
+      // Configure to handle ES modules in pdfjs-dist
+      config.module.rules.push({
+        test: /node_modules[\\/]pdfjs-dist[\\/]/,
+        resolve: {
+          fullySpecified: false,
+        },
+      });
+      
+      // Try to externalize react-pdf to prevent webpack from processing it
+      // This might not work perfectly but can help
+      if (!config.externals) {
+        config.externals = [];
+      }
+      
+      // Ignore certain modules that cause issues
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings || []),
+        { module: /node_modules[\\/]pdfjs-dist[\\/]/ },
+        { module: /node_modules[\\/]react-pdf[\\/]/ },
+      ];
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

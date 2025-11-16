@@ -6,6 +6,14 @@ import { config, validateConfig } from '@/lib/config';
 import { convertMarkupToHtml } from '@/utils/markupConverter';
 import { ConnectionIndicator } from '@/components/ConnectionIndicator';
 import { RationaleWithTraceability } from '@/components/RationaleWithTraceability';
+import { HighlightData } from '@/types';
+import dynamic from 'next/dynamic';
+
+// Dynamically import PDF viewer to avoid SSR issues with pdfjs-dist
+const PdfViewerWithHighlights = dynamic(
+  () => import('@/components/PdfViewerWithHighlights').then((mod) => mod.PdfViewerWithHighlights),
+  { ssr: false }
+);
 import { useSSE } from '@/hooks/useSSE';
 import { useEstimationSteps } from '@/hooks/useEstimationSteps';
 import { useApiMode } from '@/hooks/useApiMode';
@@ -20,6 +28,7 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isFileValidated, setIsFileValidated] = useState(false);
   const [analysisStarted, setAnalysisStarted] = useState(false);
@@ -53,6 +62,12 @@ export default function Home() {
   // Export state
   const [isExportLoading, setIsExportLoading] = useState(false);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  
+  // PDF Viewer state
+  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+  const [pdfViewerHighlights, setPdfViewerHighlights] = useState<HighlightData[]>([]);
+  const [pdfViewerRefNumber, setPdfViewerRefNumber] = useState<number | undefined>(undefined);
+  const [pdfViewerInitialPage, setPdfViewerInitialPage] = useState<number>(1);
   
   // Filtering and sorting state
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
@@ -121,6 +136,7 @@ export default function Home() {
                   setIsFileValidated(false);
                   setUploadedFileName(null);
                   setUploadedFileSize(null);
+                  setUploadedFile(null);
                   setUploadResponseData(null);
                   
                   // Reset steps
@@ -265,6 +281,7 @@ export default function Home() {
       if (validation.isValid) {
         setUploadedFileName(file.name);
         setUploadedFileSize(file.size);
+        setUploadedFile(file); // Store file for PDF viewer
         uploadFile(file);
       } else {
         toast.error(validation.error!);
@@ -397,6 +414,7 @@ export default function Home() {
               setUploadedFileName(null);
               setSessionId(null);
               setUploadedFileSize(null);
+              setUploadedFile(null);
               setIsFileValidated(false);
               setAnalysisStarted(false);
               setUploadResponseData(null);
@@ -2430,6 +2448,14 @@ export default function Home() {
                                           <RationaleWithTraceability
                                             rationale={platformsData.rationale}
                                             traceability={platformsData.traceability}
+                                            onReferenceClick={(refNumber, highlights) => {
+                                              // Find the first page with highlights for this reference
+                                              const firstHighlight = highlights[0];
+                                              setPdfViewerInitialPage(firstHighlight?.page || 1);
+                                              setPdfViewerRefNumber(refNumber);
+                                              setPdfViewerHighlights(platformsData.traceability?.highlight_data || []);
+                                              setPdfViewerOpen(true);
+                                            }}
                                           />
                                         </div>
                                       </div>
@@ -3979,7 +4005,15 @@ export default function Home() {
           </div>
         )}
 
-
+        {/* PDF Viewer Modal */}
+        <PdfViewerWithHighlights
+          file={uploadedFile}
+          highlights={pdfViewerHighlights}
+          isOpen={pdfViewerOpen}
+          onClose={() => setPdfViewerOpen(false)}
+          initialPage={pdfViewerInitialPage}
+          referenceNumber={pdfViewerRefNumber}
+        />
       </div>
     </div>
   );

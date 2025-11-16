@@ -8,11 +8,13 @@ import { TraceabilityPopover } from './TraceabilityPopover';
 interface RationaleWithTraceabilityProps {
   rationale: string;
   traceability?: TraceabilityData;
+  onReferenceClick?: (refNumber: number, highlights: HighlightData[]) => void;
 }
 
 export const RationaleWithTraceability: React.FC<RationaleWithTraceabilityProps> = ({
   rationale,
-  traceability
+  traceability,
+  onReferenceClick
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const popoverStateRef = useRef<{
@@ -113,6 +115,7 @@ export const RationaleWithTraceability: React.FC<RationaleWithTraceabilityProps>
       const chunks = chunksByReference.get(refNumber) || [];
       if (chunks.length === 0) return;
       
+      // Always show popover when clicking a reference number
       const rect = refElement.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
@@ -353,6 +356,24 @@ export const RationaleWithTraceability: React.FC<RationaleWithTraceabilityProps>
               </svg>
             </button>
           </div>
+
+          {onReferenceClick && (
+            <div className="mb-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReferenceClick(popoverState.refNumber, popoverState.chunks);
+                  setPopoverState(null);
+                }}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>Open PDF</span>
+              </button>
+            </div>
+          )}
 
           <div className="space-y-3">
             {popoverState.chunks.map((chunk, index) => (
