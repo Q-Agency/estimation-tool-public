@@ -2419,19 +2419,88 @@ export default function Home() {
                                     <div>
                                       <h4 className="text-lg font-bold text-gray-900 mb-4">{texts.analysisResults.identifiedTargetPlatforms}</h4>
                                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {platformsData.platforms.map((platform: any, index: number) => (
-                                          <div key={index} className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 text-center hover:shadow-lg transition-shadow duration-200">
-                                            <div className="flex justify-center mb-4">
-                                              <div className="w-16 h-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-sm">
-                                                {getPlatformIcon(platform.enum)}
+                                        {platformsData.platforms.map((platform: any, index: number) => {
+                                          // Helper to get confidence badge color
+                                          const getConfidenceBadgeColor = (level: string) => {
+                                            switch (level?.toUpperCase()) {
+                                              case 'HIGH':
+                                                return 'bg-green-100 text-green-800 border-green-200';
+                                              case 'MEDIUM':
+                                                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                                              case 'LOW':
+                                                return 'bg-orange-100 text-orange-800 border-orange-200';
+                                              default:
+                                                return 'bg-gray-100 text-gray-800 border-gray-200';
+                                            }
+                                          };
+
+                                          // Helper to get evidence type badge color
+                                          const getEvidenceBadgeColor = (type: string) => {
+                                            switch (type?.toUpperCase()) {
+                                              case 'EXPLICIT':
+                                                return 'bg-blue-100 text-blue-800 border-blue-200';
+                                              case 'IMPLICIT':
+                                                return 'bg-purple-100 text-purple-800 border-purple-200';
+                                              case 'INFERRED':
+                                                return 'bg-gray-100 text-gray-800 border-gray-200';
+                                              default:
+                                                return 'bg-gray-100 text-gray-800 border-gray-200';
+                                            }
+                                          };
+
+                                          return (
+                                            <div key={index} className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-200 flex flex-col">
+                                              {/* Header Section with Icon and Title */}
+                                              <div className="text-center mb-4">
+                                                <div className="flex justify-center mb-3">
+                                                  <div className="w-16 h-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-sm">
+                                                    {getPlatformIcon(platform.enum)}
+                                                  </div>
+                                                </div>
+                                                <h5 className="font-bold text-gray-900 text-lg">{platform.text}</h5>
                                               </div>
+
+                                              {/* Evidence Metadata */}
+                                              {(platform.confidence_level || platform.evidence_type) && (
+                                                <div className="flex flex-wrap gap-2 justify-center mb-3">
+                                                  {platform.confidence_level && (
+                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getConfidenceBadgeColor(platform.confidence_level)}`}>
+                                                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                      </svg>
+                                                      {platform.confidence_level}
+                                                    </span>
+                                                  )}
+                                                  {platform.evidence_type && (
+                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getEvidenceBadgeColor(platform.evidence_type)}`}>
+                                                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                                      </svg>
+                                                      {platform.evidence_type}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              )}
+
+                                              {/* Strength Rationale */}
+                                              {platform.strength_rationale && (
+                                                <div className="mt-auto pt-3 border-t border-gray-200">
+                                                  <p className="text-xs text-gray-600 leading-relaxed text-left">
+                                                    {platform.strength_rationale}
+                                                  </p>
+                                                  {platform.supporting_excerpts && platform.supporting_excerpts.length > 0 && (
+                                                    <div className="mt-2 flex items-center gap-1 text-xs text-gray-500">
+                                                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                                                      </svg>
+                                                      <span>{platform.supporting_excerpts.length} excerpt{platform.supporting_excerpts.length !== 1 ? 's' : ''}</span>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              )}
                                             </div>
-                                            <h5 className="font-bold text-gray-900 text-lg mb-2">{platform.text}</h5>
-                                            <div className="inline-flex px-3 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
-                                              {platform.enum.replace('_', ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                                            </div>
-                                          </div>
-                                        ))}
+                                          );
+                                        })}
                                       </div>
                                     </div>
 

@@ -106,6 +106,10 @@ export interface DocumentPreparationData {
 export interface PlatformInfo {
   enum: string;
   text: string;
+  confidence_level: string;
+  evidence_type: string;
+  supporting_excerpts: number[];
+  strength_rationale: string;
 }
 
 export interface HighlightCoordinates {
